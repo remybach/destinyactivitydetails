@@ -1,26 +1,19 @@
 {
-  "name": "node-js-getting-started",
-  "version": "0.1.4",
-  "description": "A sample Node.js app using Express 4",
+  "name": "destiny-activity-tracker",
+  "version": "0.0.1",
+  "description": "A simple app to display the raw data for an activity from the Bungie.net Destiny API.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
     "ejs": "^2.3.1",
-    "express": "~4.9.x"
+    "express": "~4.9.x",
+    "request": "^2.58.0"
   },
   "engines": {
     "node": "0.12.2"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/heroku/node-js-getting-started"
-  },
-  "keywords": [
-    "node",
-    "heroku",
-    "express"
-  ],
+  "keywords": [],
   "license": "MIT"
 }
