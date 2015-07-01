@@ -1,3 +1,65 @@
-.container img {
+h2, h3 {
+  font-weight: bold;
+}
+form {
+  margin-bottom: 10px;
+}
+
+.jumbotron {
+  background: url('/gradient_green.jpg');
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  color: white;
+}
+
+.icon {
+  background: url('/gradient_green.jpg');
+  margin-right: 10px;
+  padding: 10px;
+}
+.icon img {
+  height: 55px;
+  width: 55px;
+}
+.weapon-icon img {
+  height: 50px;
+  width: 50px;
+}
+
+.img-container {
+  text-align: center;
+}
+.img-container img {
   max-width: 100%;
+}
+
+.table {
+  width: auto;
+}
+.table-weapons-container {
+  float: left;
+  margin-right: 30px;
+}
+.tableFloatingHeaderOriginal {
+  border-top: none;
+  border-bottom: none;
+  background-color: #FFF;
+}
+.section {
+  clear: left;
+}
+
+/* Utility Classes */
+.visually-hide {
+  border: 0;
+  /* Modern syntax for clip used - intentially not supporting ie7 */
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }

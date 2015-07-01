@@ -1,0 +1,179 @@
+<% include ../partials/header.ejs %>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+      <% if (error) { %>
+        <div class="alert alert-danger" role="alert">
+          <span class="glyphicon glyphicon-alert" aria-hidden="true"></span>
+          <span class="sr-only">Error:</span>
+          <%= error %>
+        </div>
+      <% } else { %>
+        <div class="section">
+          <div class="pull-left icon">
+            <img src="<%= data.activity.icon %>" alt="" />
+          </div>
+          <h2><%= data.activity.name %> - Level <%= data.activity.level %></h2>
+          <p class="lead">Date: <%= data.activity.period %></p>
+        </div>
+
+        <hr>
+        
+        <div class="section section-players">
+          <h3>Players</h3>
+
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered table-fixed-header">
+              <thead class="header">
+                <tr>
+                  <th>&nbsp;</th>
+                  <% for (player in data.players) { %>
+                    <th><%= player %></th>
+                  <% } %>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (var i=0; i < data.gameInfoEncountered.length; i++) { %>
+                  <% var gameInfo = data.gameInfoEncountered[i]; %>
+                  <tr>
+                    <td><%= gameInfo %></td>
+                    <% for (player in data.players) { %>
+                      <td><%= data.players[player].gameInfo[gameInfo] %></td>
+                    <% } %>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div> <!-- .section-players -->
+
+        <% for (playerGT in data.players) { %>
+
+          <hr>
+
+          <% var player = data.players[playerGT]; %>
+          <div class="section">
+            <h3><%= playerGT %> - Level <%= player.characterLevel.value %> <%= player.characterClass.value %></h3>
+
+            <% if (player.clanName.value) { %>
+              <p class="lead">Clan: <%= player.clanName.value %> (<%= player.clanTag.value %>)</p>
+            <% } %>
+          </div> <!-- .section- -->
+          
+          <div class="section">
+            <h4>
+              Weapons
+              <small>
+                <span class="glyphicon glyphicon-info-sign"></span>
+                Hover for flavour text.
+              </small>
+            </h4>
+
+            <div class="table-responsive table-weapons-container">
+              <table class="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <th>Weapon</th>
+                    <th>Kills</th>
+                    <th>Precision</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for (var i = player.weaponInfo.length - 1; i >= 0; i--) { %>
+                    <tr>
+                      <td class="weapon-icon">
+                        <img src="<%= player.weaponInfo[i].icon %>" />
+                      </td>
+                      <td>
+                        <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="top" title="<%= player.weaponInfo[i].description %>"></span>
+                        <%= player.weaponInfo[i].name %>
+                      </td>
+                      <td><%= player.weaponInfo[i].kills %></td>
+                      <td><%= player.weaponInfo[i].precision %></td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th>Weapon Class</th>
+                    <th>Kills</th>
+                    <th>Precision</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for (var i = player.weaponClassInfoEncountered.length - 1; i >= 0; i--) { %>
+                    <% var className = player.weaponClassInfoEncountered[i]; %>
+                    <tr>
+                      <td><%= className %></td>
+                      <td><%= player.weaponClassInfo.kills[className] ? player.weaponClassInfo.kills[className] : 0 %></td>
+                      <td><%= player.weaponClassInfo.precision[className] ? player.weaponClassInfo.precision[className] : 0 %></td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div> <!-- .section- -->
+
+          <div class="section">
+
+            <h4>Enemies</h4>
+
+            <div class="table-responsive">
+              <table class="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Kills</th>
+                    <th>Precision</th>
+                    <th>Assists</th>
+                    <th>Deaths</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for (var i = player.enemiesEncountered.length - 1; i >= 0; i--) { %>
+                    <% var enemy = player.enemiesEncountered[i]; %>
+                    <tr>
+                      <td><%= enemy.key %></td>
+                      <td><%= enemy.name %></td>
+                      <td><%= player.enemyInfo.kills[enemy.key] ? player.enemyInfo.kills[enemy.key].val : 0 %></td>
+                      <td><%= player.enemyInfo.precision[enemy.key] ? player.enemyInfo.precision[enemy.key].val : 0 %></td>
+                      <td><%= player.enemyInfo.assists[enemy.key] ? player.enemyInfo.assists[enemy.key].val : 0 %></td>
+                      <td><%= player.enemyInfo.deaths[enemy.key] ? player.enemyInfo.deaths[enemy.key].val : 0 %></td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+
+          </div> <!-- .section- -->
+        <% } %>
+
+        <hr>
+
+        <div class="section">
+          <h3>Raw Data</h3>
+
+          <div class="alert alert-info text-center" role="alert">
+            <span class="glyphicon glyphicon-info-sign"></span> It's recommended that you install a plugin/extension such as JSONView <a href="https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc">for Chrome</a>, or <a href="http://jsonview.com/">Firefox</a> to make reading the data easier.
+          </div>
+          
+          <p>
+            <a href="/<%= activityId %>.json" class="btn btn-info">View the raw data for this activity.</a>
+          </p>
+        </div>
+      <% } %>
+
+    </div>
+  </div> <!-- row -->
+</div>
+
+<% include ../partials/footer.ejs %>

@@ -1,42 +1,49 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <% include ../partials/header.ejs %>
-</head>
+<% include ../partials/header.ejs %>
 
-<body>
-
-  <% include ../partials/nav.ejs %>
-
-<div class="jumbotron text-center">
-  <div class="container">
-    <h1>Destiny Activity Details</h1>
-    <p>A simple app to display the raw data for an activity from the Bungie.net Destiny API.</p>
-  </div>
-</div>
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-      <h3>How to view your data</h3>
-      <p>
-        Navigate to <code>https://destiny-activity-details.herokuapp.com/ACTIVITY_ID</code>, replacing <code>ACTIVITY_ID</code> with the specific activity that you want the data for.
-      </p>
+
+      <% if (error) { %>
+        <div class="alert alert-danger" role="alert">
+          <span class="glyphicon glyphicon-alert" aria-hidden="true"></span>
+          <span class="sr-only">Error:</span>
+          <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/" method="POST">
+        <div class="input-group">
+          <label for="activity_id" class="visually-hide">Activity ID</label>
+          <input type="text" class="form-control" placeholder="Activity ID" name="activityId" autofocus required pattern="[0-9]+" title="Numbers only">
+          <span class="input-group-btn">
+            <button class="btn btn-primary" type="submit">Get Data</button>
+          </span>
+        </div>
+      </form>
+
       <p>
         The easiest way to get the activity id is by finding the game on <a href="http://destinytracker.com">Destiny Tracker</a> and grabbing it off the share url as seen in the image below.
       </p>
-      <p>
+      <p class="img-container">
         <img src="dt_activity_id.png" />
       </p>
+
+    </div>
+  </div>
+  <div class="row">
+    <!-- <div class="col-md-12">
+      <p>
+        The easiest way to get the activity id is by finding the game on <a href="http://destinytracker.com">Destiny Tracker</a> and grabbing it off the share url as seen in the image below.
+      </p>
+      <p class="text-center"><img src="dt_activity_id.png" /></p>
 
       <div class="alert alert-info text-center" role="alert">
         <span class="glyphicon glyphicon-info-sign"></span> It's recommended that you install a plugin/extension such as JSONView <a href="https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc">for Chrome</a>, or <a href="http://jsonview.com/">Firefox</a> to make reading the data easier.
       </div>
 
-    </div>
+    </div> -->
   </div> <!-- row -->
 </div>
 
 <% include ../partials/footer.ejs %>
-
-</body>
-</html>
