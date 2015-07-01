@@ -21,7 +21,7 @@ Data.prototype.tidyUp = function() {
   for (var i=0; i < this.data.entries.length; i++) {
     var entry = this.data.entries[i];
 
-    tidy.players[entry.player.destinyUserInfo.displayName] = this.parsePlayer(entry);
+    tidy.players[entry.characterId] = this.parsePlayer(entry);
   }
 
   // These calls are async, so return a promise.
@@ -88,10 +88,11 @@ Data.prototype.tidyUp = function() {
 Data.prototype.parsePlayer = function(entry) {
   var player = {
         // Character info
-        characterClass: { name: 'Class', value: entry.player.characterClass },
-        characterLevel: { name: 'Level', value: entry.player.characterLevel },
-        clanName: { name: 'Clan Name', value: entry.player.clanName },
-        clanTag: { name: 'Clan Tag', value: entry.player.clanTag }
+        name: entry.player.destinyUserInfo.displayName,
+        characterClass: entry.player.characterClass,
+        characterLevel: entry.player.characterLevel,
+        clanName: entry.player.clanName,
+        clanTag: entry.player.clanTag
       },
       gameInfo = {},
       enemyInfo = { assists: {}, deaths: {}, kills: {}, precision: {} },
