@@ -51,7 +51,6 @@ Data.prototype.tidyUp = function() {
     // Weapon Name and Description
     for (player in tidy.players) {
       var player = tidy.players[player],
-          enemiesEncountered = player.enemiesEncountered,
           weaponInfo = player.weaponInfo;
 
       for (var i=0; i < weaponInfo.length; i++) {
@@ -99,11 +98,12 @@ Data.prototype.parsePlayer = function(entry) {
       weaponInfo = [],
       weaponClassInfo = { kills: {}, precision: {} },
       enemiesEncountered = [],
+      enemiesEncounteredData = [],
       weaponsEncountered = [],
       weaponClassInfoEncountered = [],
 
       NOT = "?!",
-      ENEMIES = "assistsAgainst|deathsFrom|killsOf|precisionKillOf",
+      ENEMIES = "assistsAgainst|deathsFrom|killsOf|precisionKillOf|precisionKillsOf",
       USELESS = "allParticipants|fireTeamId|weaponKillsPrecisionKills|uniqueWeaponKillsPrecisionKills",
       WEAPONS = "weapon";
 
@@ -149,14 +149,17 @@ Data.prototype.parsePlayer = function(entry) {
       } else if (key.indexOf('killsOf') > -1) {
         key = key.replace(/killsOf/, '');
         type = 'kills';
-      } else if (key.indexOf('precisionKillOf') > -1) {
+      } else if (key.indexOf('precisionKillOf') > -1 || key.indexOf('precisionKillsOf') > -1) {
         key = key.replace(/precisionKillOf/, '');
         type = 'precision';
       }
 
       enemy = { key: key, val: val, name: name };
       enemyInfo[type][key] = enemy;
-      enemiesEncountered.indexOf(enemy) == -1 && enemiesEncountered.push(enemy);
+      if (enemiesEncountered.indexOf(key) == -1) {
+        enemiesEncountered.push(key);
+        enemiesEncounteredData.push(enemy);
+      }
 
     }
 
@@ -176,6 +179,7 @@ Data.prototype.parsePlayer = function(entry) {
     player.gameInfo = gameInfo;
     player.enemyInfo = enemyInfo;
     player.enemiesEncountered = enemiesEncountered;
+    player.enemiesEncounteredData = enemiesEncounteredData;
     player.weaponInfo = weaponInfo;
     player.weaponClassInfo = weaponClassInfo;
     player.weaponsEncountered = weaponsEncountered;
