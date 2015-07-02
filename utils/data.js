@@ -184,6 +184,8 @@ Data.prototype.parsePlayer = function(entry) {
     player.weaponClassInfo = weaponClassInfo;
     player.weaponsEncountered = weaponsEncountered;
     player.weaponClassInfoEncountered = weaponClassInfoEncountered;
+
+    player.hasInfo = player.weaponInfo.length && player.weaponClassInfoEncountered.length && player.enemiesEncountered.length;
   }
 
   return player;
