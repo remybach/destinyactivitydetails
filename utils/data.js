@@ -1,8 +1,7 @@
-var Data = function(data, definitions, API_KEY, URLS) {
+var Data = function(data, destinyApi) {
   this.data = data;
-  this.definitions = definitions;
-  this.API_KEY = API_KEY;
-  this.URLS = URLS;
+  this.destinyApi = destinyApi;
+  this.definitions = destinyApi.getDefinitions();
 },
 
     request = require("request"),
@@ -32,7 +31,7 @@ Data.prototype.tidyUp = function() {
         dfd = Q.defer();
 
     // Activity Name and Level
-    toCall = function(error, response, body) {
+    toCall = function(error, body) {
       if (!error && body) {
         var activity = JSON.parse(body).Response.data.activity;
 
@@ -45,7 +44,7 @@ Data.prototype.tidyUp = function() {
         this.dfd.reject(new Error(error));
       }
     }.bind({ dfd: dfd })
-    this.getActivityInfo(this.data.activityDetails.referenceId, toCall);
+    this.destinyApi.getActivityInfo(this.data.activityDetails.referenceId, toCall);
     calls.push(dfd.promise);
 
     // Weapon Name and Description
@@ -58,7 +57,7 @@ Data.prototype.tidyUp = function() {
 
         dfd = Q.defer();
 
-        toCall = function(error, response, body) {
+        toCall = function(error, body) {
           if (!error && body) {
             var weapon = JSON.parse(body).Response.data.inventoryItem;
 
@@ -72,7 +71,7 @@ Data.prototype.tidyUp = function() {
           }
         }.bind({ weapon: weaponInfo[i], dfd: dfd });
 
-        this.getWeaponInfo(weapon.id, toCall);
+        this.destinyApi.getWeaponInfo(weapon.id, toCall);
         calls.push(dfd.promise);
       }
     }
@@ -189,21 +188,6 @@ Data.prototype.parsePlayer = function(entry) {
   }
 
   return player;
-};
-
-Data.prototype.getActivityInfo = function(id, callback) {
-  request({
-    url: this.URLS.manifest + '1/' + id, // 1 = activity
-  }, callback);
-};
-
-Data.prototype.getWeaponInfo = function(id, callback) {
-  request({
-    url: this.URLS.manifest + '6/' + id, // 6 = weapons
-    headers: {
-      "X-API-Key": this.API_KEY
-    }
-  }, callback);
 };
 
 exports.Data = Data;

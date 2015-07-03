@@ -1,17 +1,13 @@
-var API_KEY = "19e94d3006c34e34a3087ee92a1d9f67",
-    URLS = {
-      activity: "http://www.bungie.net/platform/Destiny/Stats/PostGameCarnageReport/",
-      definitions: "https://www.bungie.net/Platform/Destiny/Stats/Definition/",
-      manifest: "https://www.bungie.net/Platform/Destiny/Manifest/"
-    },
-    JSON_REG = /\.json$/i,
+var JSON_REG = /\.json$/i,
   
     bodyParser = require('body-parser'),
     express = require('express'),
     request = require("request"),
     Q = require('q'),
+    Destiny = require('./utils/destiny.js').Destiny,
     Data = require('./utils/data.js').Data,
     app = express(),
+    destinyApi = new Destiny(),
     definitions;
 
 app.set('port', (process.env.PORT || 5000));
@@ -39,19 +35,21 @@ app.get('/', function(req, res) {
 app.get('/:activityId', function(req, res) {
   if (/[0-9]+(\.json)?/.test(req.params.activityId)) {
     if (JSON_REG.test(req.params.activityId)) {
-      getActivityData(req.params.activityId.replace(JSON_REG, ''), function(error, response, body) {
-        if (!error && response.statusCode == 200) {
+      destinyApi.getActivityData(req.params.activityId.replace(JSON_REG, ''), function(error, body) {
+        if (!error) {
           res.send(body);
+        } else {
+          res.render('pages/index', { error: error });
         }
       });
     } else {
-      getActivityData(req.params.activityId, function(error, response, body) {
-        if (!error && response.statusCode == 200) {
+      destinyApi.getActivityData(req.params.activityId, function(error, body) {
+        if (!error) {
           var data = JSON.parse(body),
               dataUtil;
 
           if (data) {
-            dataUtil = new Data(data.Response.data, definitions, API_KEY, URLS);
+            dataUtil = new Data(data.Response.data, destinyApi);
 
             Q.fcall(dataUtil.tidyUp.bind(dataUtil)).then(function(tidiedData) {
               res.render('pages/activity', { error: false, data: tidiedData, activityId: req.params.activityId });
@@ -60,7 +58,7 @@ app.get('/:activityId', function(req, res) {
             });
 
           } else {
-            res.render('pages/index', { error: "No data was returned for this activity id." });
+            res.render('pages/index', { error: error });
           }
         }
       });  
@@ -72,27 +70,4 @@ app.get('/:activityId', function(req, res) {
 
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
-});
-
-function getActivityData(activityId, callback) {
-  console.log('Looking up data for activity with id: ' + activityId);
-  request({
-    url: URLS.activity + activityId,
-    headers: {
-      "X-API-Key": API_KEY
-    }
-  }, callback);
-}
-
-request({
-  url: URLS.definitions,
-  headers: {
-    "X-API-Key": API_KEY
-  }
-}, function(error, response, body) {
-  if (!error && response.statusCode == 200) {
-    definitions = JSON.parse(body).Response;
-  } else {
-    throw Error(error);
-  }
 });
