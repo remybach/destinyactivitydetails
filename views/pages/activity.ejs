@@ -61,15 +61,16 @@
         <% for (playerId in data.players) { %>
           <% var player = data.players[playerId]; %>
 
-          <hr>
+          <hr id="<%= playerId %>">
 
           <div class="section">
             <h3>
               <% var playerTitle = player.name + " - Level " + player.characterLevel + " " + player.characterClass; %>
               <% if (player.hasInfo) { %>
-                <a href="#<%= playerId %>" data-toggle="collapse" aria-expanded="false" aria-controls="<%= playerId %>">
+                <a href="#<%= playerId %>" class="js-player-name" id="<%= playerId %>-trigger">
                   <%= playerTitle %>
                 </a>
+                <a href="#collapse-<%= playerId %>" class="js-collapse-toggle" data-toggle="collapse" aria-expanded="false" aria-controls="collapse-<%= playerId %>"></a>
               <% } else { %>
                 <%= playerTitle %>
                 <small>(no info to display)</small>
@@ -81,7 +82,7 @@
             <% } %>
           </div> <!-- .section- -->
 
-          <div class="collapse player-tables" id="<%= playerId %>">
+          <div class="collapse player-tables" id="collapse-<%= playerId %>">
             <% if (player.weaponInfo.length && player.weaponClassInfoEncountered.length) { %>
               <div class="section">
                 <h4>
