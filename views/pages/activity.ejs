@@ -31,7 +31,12 @@
                   <th>&nbsp;</th>
                   <% for (playerId in data.players) { %>
                     <% var player = data.players[playerId] %>
-                    <th><%= player.name %> (Level <%= player.characterLevel %> <%= player.characterClass %>)</th>
+                    <th>
+                      <a href="#collapse-<%= playerId %>" class="js-collapse-toggle" data-toggle="collapse" aria-expanded="false" aria-controls="collapse-<%= playerId %>">
+                        <%= player.name %>
+                      </a>
+                      (Level <%= player.characterLevel %> <%= player.characterClass %>)
+                    </th>
                   <% } %>
                 </tr>
               </thead>
@@ -67,10 +72,9 @@
             <h3>
               <% var playerTitle = player.name + " - Level " + player.characterLevel + " " + player.characterClass; %>
               <% if (player.hasInfo) { %>
-                <a href="#<%= playerId %>" class="js-player-name" id="<%= playerId %>-trigger">
+                <a href="#collapse-<%= playerId %>" class="js-collapse-toggle" data-toggle="collapse" aria-expanded="false" aria-controls="collapse-<%= playerId %>">
                   <%= playerTitle %>
                 </a>
-                <a href="#collapse-<%= playerId %>" class="js-collapse-toggle" data-toggle="collapse" aria-expanded="false" aria-controls="collapse-<%= playerId %>"></a>
               <% } else { %>
                 <%= playerTitle %>
                 <small>(no info to display)</small>
