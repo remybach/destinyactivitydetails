@@ -10,11 +10,15 @@ jQuery(function ($) {
   });
 
   // Enable hotlinking directly to players.
-  $('.collapse').on($.support.transition.end, function() {
-    var hash = '#' + this.id.replace('collapse-', '');
+  $('.collapse').on($.support.transition.end, function(e) {
+    setTimeout(function() {
+      if ($(this).hasClass('in')) {
+        var hash = '#' + this.id.replace('collapse-', '');
 
-    location.hash = "";
-    location.hash = hash;
+        location.hash = "";
+        location.hash = hash;
+      }
+    }.bind(this), 0);
   });
   
   if (location.hash) {
