@@ -1,3 +1,5 @@
+// TODO: Save definitions to disk and if those contents are older than a day (check meta data), then update. Otherwise, just pull in contents of file.
+
 var Destiny = function() {
       // Update definitions on init.
       this.updateDefinitions();
