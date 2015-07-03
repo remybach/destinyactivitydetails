@@ -2,10 +2,33 @@ var Data = function(data, destinyApi) {
   this.data = data;
   this.destinyApi = destinyApi;
   this.definitions = destinyApi.getDefinitions();
+
+  activityDataPath = fs.normalize(process.cwd() + "/data/" + data.activityDetails.referenceId + ".json")
 },
 
+    fs = require("fs-utils"),
     request = require("request"),
-    Q = require("q");
+    Q = require("q"),
+
+    activityDataPath;
+
+Data.prototype.parse = function() {
+  var readFile = function(foo, json) {
+    console.log('hi');
+      // Make the activity data last a week before re-fetching.
+      if ( !json || !json.data || json.lastUpdated < (new Date().getTime() - 7 * 24 * 60 * 60 * 1000) ) {
+        return this.tidyUp();
+      } else {
+        console.log("Returning the cached activity data.");
+
+        return json.data;
+      }
+    }.bind(this);
+
+  fs.readJSON(activityDataPath, readFile);
+
+  return Q.all([readFile]);
+};
 
 Data.prototype.tidyUp = function() {
   tidy = {
@@ -78,7 +101,13 @@ Data.prototype.tidyUp = function() {
 
     return Q.all(calls);
   }.bind(this)).then(function() {
-    console.log('returning the tidied up list.');
+    console.log('returning the tidied up list and writing to: ' + activityDataPath);
+
+    fs.writeFile(activityDataPath, JSON.stringify({
+      lastUpdated: new Date().getTime(),
+      data: tidy
+    }));
+
     return tidy;
   });
 };

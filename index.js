@@ -1,3 +1,7 @@
+/* TODO: Consider using this bash script to delete files older than 10 days
+        `find /media/bkfolder/ -type f -mtime +7 -name '*.gz' -execdir rm -- {} +`
+        along with this: http://www.dzone.com/snippets/execute-unix-command-nodejs */
+
 var JSON_REG = /\.json$/i,
   
     bodyParser = require('body-parser'),
@@ -51,7 +55,7 @@ app.get('/:activityId', function(req, res) {
           if (data) {
             dataUtil = new Data(data.Response.data, destinyApi);
 
-            Q.fcall(dataUtil.tidyUp.bind(dataUtil)).then(function(tidiedData) {
+            Q.fcall(dataUtil.parse.bind(dataUtil)).then(function(tidiedData) {
               res.render('pages/activity', { error: false, data: tidiedData, activityId: req.params.activityId });
             }).fail(function(error) {
               res.render('pages/activity', { error: error });
