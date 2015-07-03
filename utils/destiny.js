@@ -1,6 +1,8 @@
 // TODO: Save definitions to disk and if those contents are older than a day (check meta data), then update. Otherwise, just pull in contents of file.
 
 var Destiny = function() {
+      definitionsPath = fs.normalize(process.cwd() + "/data/definitions.json")
+
       // Update definitions on init.
       this.updateDefinitions();
 
@@ -16,7 +18,11 @@ var Destiny = function() {
     },
     DEFINITIONS,
 
-    request = require("request");
+    fs = require("fs-utils"),
+    request = require("request"),
+
+    definitionsFile,
+    definitionsPath;
 
 Destiny.prototype.getActivityData = function(activityId, callback) {
     console.log('Looking up data for activity with id: ' + activityId);
@@ -76,18 +82,34 @@ Destiny.prototype.getDefinitions = function() {
 
 Destiny.prototype.updateDefinitions = function() {
   console.log("Updating definitions...");
-  request({
-    url: URLS.definitions,
-    headers: {
-      "X-API-Key": API_KEY
-    }
-  }, function(error, response, body) {
-    if (!error && response.statusCode == 200) {
-      DEFINITIONS = JSON.parse(body).Response;
-      console.log("Definitions updated!");
+
+  fs.readJSON(definitionsPath, function(foo, json) {
+    if ( !json || !json.data || json.lastUpdated < (new Date().getTime() - 23 * 60 * 60 * 1000) ) {
+      console.log("Fetching definitions from API again.");
+
+      request({
+        url: URLS.definitions,
+        headers: {
+          "X-API-Key": API_KEY
+        }
+      }, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+          DEFINITIONS = JSON.parse(body).Response;
+          fs.writeFile(definitionsPath, JSON.stringify({
+            lastUpdated: new Date().getTime(),
+            data: DEFINITIONS
+          }));
+          console.log("Definitions cached data file updated.");
+        } else {
+          throw Error(error);
+        }
+      });
     } else {
-      throw Error(error);
+      console.log("Using definitions from cached data file.");
+
+      DEFINITIONS = json.data;
     }
+
   });
 };
 
