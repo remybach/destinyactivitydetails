@@ -5,6 +5,7 @@ jQuery(function ($) {
   $('table.data-table').DataTable({
     info: false,
     paging: false,
+    scrollX: false,
     searching: false
   });
 });
