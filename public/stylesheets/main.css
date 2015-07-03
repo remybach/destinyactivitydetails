@@ -42,6 +42,9 @@ form {
 .table {
   width: auto;
 }
+.player-tables .table-responsive {
+  overflow-x: hidden;
+}
 .table-weapons-container {
   float: left;
   margin-right: 30px;

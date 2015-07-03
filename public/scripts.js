@@ -3,9 +3,9 @@ jQuery(function ($) {
 
   $('table').stickyTableHeaders();
   $('table.data-table').DataTable({
+    deferRender: true,
     info: false,
     paging: false,
-    scrollX: false,
     searching: false
   });
 });
