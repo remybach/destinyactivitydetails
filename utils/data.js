@@ -13,21 +13,23 @@ var Data = function(data, destinyApi) {
     activityDataPath;
 
 Data.prototype.parse = function() {
-  var readFile = function(foo, json) {
-    console.log('hi');
-      // Make the activity data last a week before re-fetching.
-      if ( !json || !json.data || json.lastUpdated < (new Date().getTime() - 7 * 24 * 60 * 60 * 1000) ) {
-        return this.tidyUp();
-      } else {
-        console.log("Returning the cached activity data.");
+  var dfd = Q.defer(),
+      readFile = function(foo, json) {
+        console.log('hi');
 
-        return json.data;
-      }
-    }.bind(this);
+        // Make the activity data last a week before re-fetching.
+        if ( !json || !json.data || json.lastUpdated < (new Date().getTime() - 7 * 24 * 60 * 60 * 1000) ) {
+          dfd.resolve(this.tidyUp());
+        } else {
+          console.log("Returning the cached activity data.");
+
+          dfd.resolve(json.data);
+        }
+      }.bind(this);
 
   fs.readJSON(activityDataPath, readFile);
 
-  return Q.all([readFile]);
+  return dfd.promise;
 };
 
 Data.prototype.tidyUp = function() {
