@@ -3,7 +3,7 @@ var Data = function(data, destinyApi) {
   this.destinyApi = destinyApi;
   this.definitions = destinyApi.getDefinitions();
 
-  activityDataPath = fs.normalize(process.cwd() + "/data/" + data.activityDetails.referenceId + ".json")
+  activityDataPath = fs.normalize(process.cwd() + "/data/" + data.activityDetails.instanceId + ".json")
 },
 
     fs = require("fs-utils"),
@@ -16,12 +16,10 @@ var Data = function(data, destinyApi) {
 Data.prototype.parse = function() {
   var dfd = Q.defer(),
       readFile = function(foo, json) {
-        console.log('hi');
-
         if ( !json || !json.data ) {
           dfd.resolve(this.tidyUp());
         } else {
-          console.log("Returning the cached activity data.");
+          console.log("Returning the cached activity data from file: " + activityDataPath);
 
           dfd.resolve(json.data);
         }
@@ -103,7 +101,7 @@ Data.prototype.tidyUp = function() {
 
     return Q.all(calls);
   }.bind(this)).then(function() {
-    console.log('returning the tidied up list and writing to: ' + activityDataPath);
+    console.log('Returning the tidied up list and writing to: ' + activityDataPath);
 
     fs.writeFile(activityDataPath, JSON.stringify({
       lastUpdated: new Date().getTime(),
