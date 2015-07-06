@@ -10,6 +10,7 @@ var Data = function(data, destinyApi) {
     request = require("request"),
     Q = require("q"),
 
+    oneWeek = 7 * 24 * 60 * 60 * 1000,
     activityDataPath;
 
 Data.prototype.parse = function() {
@@ -17,8 +18,7 @@ Data.prototype.parse = function() {
       readFile = function(foo, json) {
         console.log('hi');
 
-        // Make the activity data last a week before re-fetching.
-        if ( !json || !json.data || json.lastUpdated < (new Date().getTime() - 7 * 24 * 60 * 60 * 1000) ) {
+        if ( !json || !json.data ) {
           dfd.resolve(this.tidyUp());
         } else {
           console.log("Returning the cached activity data.");
@@ -219,6 +219,29 @@ Data.prototype.parsePlayer = function(entry) {
   }
 
   return player;
+};
+
+// This method is run as a singleton.
+Data.purgeOldCache = function() {
+  fs.glob('data/*.json', function (err, paths) {
+    if (!err) {
+      paths = paths.filter(function(path) {
+        return /data\/[0-9]+\.json/.test(path);
+      });
+
+      for (var i = paths.length - 1; i >= 0; i--) {
+        fs.readJSON(paths[i], function(foo, json) {
+          if (json.lastUpdated < (new Date().getTime() - oneWeek)) {
+            console.log(this.path + " is stale. Deleting.");
+            fs.del(this.path);
+          }
+        }.bind({ path: paths[i] }));
+      };
+    }
+  });
+
+  // Check this once a week.
+  setTimeout(Data.purgeOldCache, oneWeek);
 };
 
 exports.Data = Data;
