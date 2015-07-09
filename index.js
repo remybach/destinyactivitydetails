@@ -48,7 +48,7 @@ app.get('/:activityId', function(req, res) {
           var data = JSON.parse(body),
               dataUtil;
 
-          if (data) {
+          if (data && data.Response && data.Response.data) {
             dataUtil = new Data(data.Response.data, destinyApi);
 
             Q.fcall(dataUtil.parse.bind(dataUtil)).then(function(tidiedData) {
@@ -58,8 +58,10 @@ app.get('/:activityId', function(req, res) {
             });
 
           } else {
-            res.render('pages/index', { error: error });
+            res.render('pages/index', { error: "No data was returned for this activity id." });
           }
+        } else {
+          res.render('pages/index', { error: error });
         }
       });  
     }
