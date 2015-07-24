@@ -3,7 +3,7 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-      
+
       <% if (error) { %>
         <div class="alert alert-danger" role="alert">
           <span class="glyphicon glyphicon-alert" aria-hidden="true"></span>
@@ -20,7 +20,7 @@
         </div>
 
         <hr>
-        
+
         <div class="section section-players">
           <h2>Players</h2>
 
@@ -55,7 +55,7 @@
             </table>
           </div>
         </div> <!-- .section-players -->
-        
+
         <hr>
 
         <div class="alert alert-warning">
@@ -111,13 +111,22 @@
                       <tbody>
                         <% for (var i = player.weaponInfo.length - 1; i >= 0; i--) { %>
                           <tr>
-                            <td class="weapon-icon">
-                              <img src="<%= player.weaponInfo[i].icon %>" />
-                            </td>
-                            <td>
-                              <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" title="<%= player.weaponInfo[i].description %>"></span>
-                              <%= player.weaponInfo[i].name %>
-                            </td>
+                            <% if (player.weaponInfo[i].name) { %>
+                              <td class="weapon-icon">
+                                <img src="<%= player.weaponInfo[i].icon %>" />
+                              </td>
+                              <td>
+                                <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" title="<%= player.weaponInfo[i].description %>"></span>
+                                <%= player.weaponInfo[i].name %>
+                              </td>
+                            <% } else { %>
+                              <td></td>
+                              <td>
+                                Weapon info not found.<br>
+                                <a href="https://www.bungie.net/en/Armory/Detail?item=<%= player.weaponInfo[i].id %>">Perhaps the armoury has more info?</a>
+                              </td>
+                            <% } %>
+
                             <td><%= player.weaponInfo[i].kills %></td>
                             <td><%= player.weaponInfo[i].precision %></td>
                           </tr>
@@ -188,7 +197,7 @@
 
               </div> <!-- .section- -->
             <% } %>
-            
+
           </div> <!-- .collapse -->
         <% } %>
 
@@ -200,7 +209,7 @@
           <div class="alert alert-info text-center" role="alert">
             <span class="glyphicon glyphicon-info-sign"></span> It's recommended that you install a plugin/extension such as JSONView <a href="https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc">for Chrome</a>, or <a href="http://jsonview.com/">Firefox</a> to make reading the data easier.
           </div>
-          
+
           <p>
             <a href="/<%= activityId %>.json" class="btn btn-info">View the raw data for this activity.</a>
           </p>

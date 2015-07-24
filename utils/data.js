@@ -82,11 +82,15 @@ Data.prototype.tidyUp = function() {
 
         toCall = function(error, body) {
           if (!error && body) {
-            var weapon = JSON.parse(body).Response.data.inventoryItem;
+            var data = JSON.parse(body);
 
-            this.weapon.name = weapon.itemName;
-            this.weapon.description = weapon.itemDescription;
-            this.weapon.icon = "http://bungie.net" + weapon.icon;
+            if (data && data.Response && data.Response.data) {
+              var weapon = data.Response.data.inventoryItem;
+
+              this.weapon.name = weapon.itemName;
+              this.weapon.description = weapon.itemDescription;
+              this.weapon.icon = "http://bungie.net" + weapon.icon;
+            }
 
             this.dfd.resolve();
           } else {
