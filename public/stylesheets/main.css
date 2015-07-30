@@ -58,6 +58,13 @@ form {
   clear: left;
 }
 
+.alert-info a {
+  text-decoration: underline;
+}
+.alert-info a:hover {
+  text-decoration: none;
+}
+
 /* Utility Classes */
 .visually-hide {
   border: 0;
