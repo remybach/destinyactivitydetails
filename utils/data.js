@@ -55,8 +55,10 @@ Data.prototype.tidyUp = function() {
 
     // Activity Name and Level
     toCall = function(error, body) {
-      if (!error && body) {
-        var activity = JSON.parse(body).Response.data.activity;
+      var body = body && JSON.parse(body);
+
+      if (!error && body.ErrorStatus == "Success") {
+        var activity = body.Response.data.activity;
 
         tidy.activity.name = activity.activityName;
         tidy.activity.level = activity.activityLevel;
@@ -64,7 +66,7 @@ Data.prototype.tidyUp = function() {
 
         this.dfd.resolve();
       } else {
-        this.dfd.reject(new Error(error));
+        this.dfd.reject(new Error(error || body.ErrorStatus));
       }
     }.bind({ dfd: dfd })
     this.destinyApi.getActivityInfo(this.data.activityDetails.referenceId, toCall);

@@ -50,7 +50,7 @@ Destiny.prototype.getManifestInfo = function(type, id, callback) {
   request({
     url: URLS.manifest + type + '/' + id,
     headers: {
-      "X-API-Key": this.API_KEY
+      "X-API-Key": API_KEY
     }
   }, function(error, response, body) {
     var name = "";
