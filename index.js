@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
   extended: true
 }));
 
-// views is directory for all template files
+// views is the directory for all template files
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
