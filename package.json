@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "A simple app to display the raw data for an activity from the Bungie.net Destiny API.",
   "main": "index.js",
+  "repository": "https://github.com/remybach/destinyactivitydetails",
   "scripts": {
     "start": "node index.js"
   },
