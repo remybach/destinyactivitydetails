@@ -1,15 +1,4 @@
-var Destiny = function() {
-      definitionsPath = fs.normalize(process.cwd() + "/data/definitions.json")
-
-      // Update definitions on init.
-      this.updateDefinitions();
-
-      // Update the definitions daily.
-      setInterval(this.updateDefinitions, 24 * 60 * 60 * 1000);
-    },
-
-    API_KEY = "19e94d3006c34e34a3087ee92a1d9f67",
-    URLS = {
+var URLS = {
       activity: "http://www.bungie.net/platform/Destiny/Stats/PostGameCarnageReport/",
       definitions: "https://www.bungie.net/Platform/Destiny/Stats/Definition/",
       manifest: "https://www.bungie.net/Platform/Destiny/Manifest/"
@@ -20,14 +9,22 @@ var Destiny = function() {
     request = require("request"),
 
     definitionsFile,
-    definitionsPath;
+    definitionsPath = fs.normalize(process.cwd() + "/data/definitions.json"),
+    
+    Destiny = function() {
+      // Update definitions on init.
+      this.updateDefinitions();
+
+      // Update the definitions daily.
+      setInterval(this.updateDefinitions, 24 * 60 * 60 * 1000);
+    };
 
 Destiny.prototype.getActivityData = function(activityId, callback) {
     console.log('Looking up data for activity with id: ' + activityId);
     request({
       url: URLS.activity + activityId,
       headers: {
-        "X-API-Key": API_KEY
+        "X-API-Key": process.env.BUNGIE_API_KEY
       }
     }, function(error, response, body) {
       if (!error && response.statusCode == 200) {
@@ -50,7 +47,7 @@ Destiny.prototype.getManifestInfo = function(type, id, callback) {
   request({
     url: URLS.manifest + type + '/' + id,
     headers: {
-      "X-API-Key": API_KEY
+      "X-API-Key": process.env.BUNGIE_API_KEY
     }
   }, function(error, response, body) {
     var name = "";
@@ -81,14 +78,16 @@ Destiny.prototype.getDefinitions = function() {
 Destiny.prototype.updateDefinitions = function() {
   console.log("Updating definitions...");
 
-  fs.readJSON(definitionsPath, function(foo, json) {
-    if ( !json || !json.data || json.lastUpdated < (new Date().getTime() - 23 * 60 * 60 * 1000) ) {
+  fs.readJSON(definitionsPath, function(err, json) {
+    var yesterday = (new Date().getTime() - 24 * 60 * 60 * 1000);
+    
+    if ( !json || !json.data || json.lastUpdated < yesterday ) {
       console.log("Fetching definitions from API again.");
 
       request({
         url: URLS.definitions,
         headers: {
-          "X-API-Key": API_KEY
+          "X-API-Key": process.env.BUNGIE_API_KEY
         }
       }, function(error, response, body) {
         if (!error && response.statusCode == 200) {

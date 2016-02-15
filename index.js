@@ -1,4 +1,5 @@
-var JSON_REG = /\.json$/i,
+var ACTIVITY_WITH_JSON = /[0-9]+(\.json)?/,
+    JSON_FILE = /\.json$/i,
   
     bodyParser = require('body-parser'),
     express = require('express'),
@@ -6,6 +7,7 @@ var JSON_REG = /\.json$/i,
     Q = require('q'),
     Destiny = require('./utils/destiny.js').Destiny,
     Data = require('./utils/data.js').Data,
+    
     app = express(),
     destinyApi = new Destiny(),
     definitions;
@@ -33,9 +35,12 @@ app.get('/', function(req, res) {
   res.render('pages/index', { error: false });
 });
 app.get('/:activityId', function(req, res) {
-  if (/[0-9]+(\.json)?/.test(req.params.activityId)) {
-    if (JSON_REG.test(req.params.activityId)) {
-      destinyApi.getActivityData(req.params.activityId.replace(JSON_REG, ''), function(error, body) {
+  // Make sure it is an activity id being passed (including requests for the json data)
+  if (ACTIVITY_WITH_JSON.test(req.params.activityId)) {
+    var id = req.params.activityId.replace(JSON_FILE, '');
+    
+    if (JSON_FILE.test(req.params.activityId)) {
+      destinyApi.getActivityData(id, function(error, body) {
         if (!error) {
           res.send(body);
         } else {
@@ -43,11 +48,12 @@ app.get('/:activityId', function(req, res) {
         }
       });
     } else {
-      destinyApi.getActivityData(req.params.activityId, function(error, body) {
+      destinyApi.getActivityData(id, function(error, body) {
         if (!error) {
           var data = JSON.parse(body),
               dataUtil;
 
+          // Ugly, but that's how the data comes back from the API ¯\_(ツ)_/¯
           if (data && data.Response && data.Response.data) {
             dataUtil = new Data(data.Response.data, destinyApi);
 

@@ -1,31 +1,31 @@
-var Data = function(data, destinyApi) {
-  this.data = data;
-  this.destinyApi = destinyApi;
-  this.definitions = destinyApi.getDefinitions();
-
-  activityDataPath = fs.normalize(process.cwd() + "/data/" + data.activityDetails.instanceId + ".json")
-},
-
-    fs = require("fs-utils"),
+var fs = require("fs-utils"),
     request = require("request"),
     Q = require("q"),
 
     oneWeek = 7 * 24 * 60 * 60 * 1000,
-    activityDataPath;
+    activityDataPath,
+    
+    Data = function(data, destinyApi) {
+      this.data = data;
+      this.destinyApi = destinyApi;
+      this.definitions = destinyApi.getDefinitions();
+
+      activityDataPath = fs.normalize(process.cwd() + "/data/" + data.activityDetails.instanceId + ".json");
+    };
 
 Data.prototype.parse = function() {
-  var dfd = Q.defer(),
-      readFile = function(foo, json) {
-        if ( !json || !json.data ) {
-          dfd.resolve(this.tidyUp());
-        } else {
-          console.log("Returning the cached activity data from file: " + activityDataPath);
+  var dfd = Q.defer();
 
-          dfd.resolve(json.data);
-        }
-      }.bind(this);
+  // First try read from a cached file.
+  fs.readJSON(activityDataPath, function(err, json) {
+    if ( !json || !json.data ) {
+      dfd.resolve(this.tidyUp());
+    } else {
+      console.log("Returning the cached activity data from file: " + activityDataPath);
 
-  fs.readJSON(activityDataPath, readFile);
+      dfd.resolve(json.data);
+    }
+  }.bind(this));
 
   return dfd.promise;
 };
@@ -35,10 +35,9 @@ Data.prototype.tidyUp = function() {
     activity: {
       period: this.data.period.replace(/[TZ]/g, ' ')
     },
-    gameInfoEncountered: []
+    gameInfoEncountered: [],
+    players: {}
   };
-
-  tidy.players = {};
 
   for (var i=0; i < this.data.entries.length; i++) {
     var entry = this.data.entries[i];
@@ -54,7 +53,7 @@ Data.prototype.tidyUp = function() {
         dfd = Q.defer();
 
     // Activity Name and Level
-    toCall = function(error, body) {
+    this.destinyApi.getActivityInfo(this.data.activityDetails.referenceId, function(error, body) {
       var body = body && JSON.parse(body);
 
       if (!error && body.ErrorStatus == "Success") {
@@ -68,8 +67,8 @@ Data.prototype.tidyUp = function() {
       } else {
         this.dfd.reject(new Error(error || body.ErrorStatus));
       }
-    }.bind({ dfd: dfd })
-    this.destinyApi.getActivityInfo(this.data.activityDetails.referenceId, toCall);
+    }.bind({ dfd: dfd }));
+
     calls.push(dfd.promise);
 
     // Weapon Name and Description
@@ -82,7 +81,7 @@ Data.prototype.tidyUp = function() {
 
         dfd = Q.defer();
 
-        toCall = function(error, body) {
+        this.destinyApi.getWeaponInfo(weapon.id, function(error, body) {
           if (!error && body) {
             var data = JSON.parse(body);
 
@@ -98,9 +97,8 @@ Data.prototype.tidyUp = function() {
           } else {
             this.dfd.reject(new Error(error));
           }
-        }.bind({ weapon: weaponInfo[i], dfd: dfd });
+        }.bind({ weapon: weaponInfo[i], dfd: dfd }));
 
-        this.destinyApi.getWeaponInfo(weapon.id, toCall);
         calls.push(dfd.promise);
       }
     }
